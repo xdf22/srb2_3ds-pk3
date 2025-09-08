@@ -1,5 +1,5 @@
 
-# SRB2 3DS
+# SRB2 3DS PK3 fork
 A port of Sonic Robo Blast 2 to the Nintendo New3DS/2DS consoles.
 
 ## Installing
@@ -22,6 +22,7 @@ A port of Sonic Robo Blast 2 to the Nintendo New3DS/2DS consoles.
 * No netplay
 * Lower screen isn't really used
 * CEZ2 is extremely laggy
+* this fork isnt tested currently as i could not get DKP working on my mac (yes, im a mac user..)
 
 ## Thanks
 Thanks to fincs, WinterMute, Monster Iestyn, Sryder, AlamTaz, Steel Titanium for help with development.
