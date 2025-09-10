@@ -1,0 +1,27 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install DKP pacman
+      run:    wget https://apt.devkitpro.org/install-devkitpro-pacman
+   chmod +x ./install-devkitpro-pacman
+   sudo ./install-devkitpro-pacman
+    - name: Install dependencies
+      run: pacman -S 3ds-sdl 3ds-sdl_mixer git
+    - name: Install citro3d fork
+      run: git clone https://github.com/derrekr/citro3d && cd citro3d && make install && cd ..
+    - name: make
+      run: make
+    - name: Upload Artifacts
+      run: actions/upload-artifact@v4
