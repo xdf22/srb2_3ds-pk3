@@ -1,5 +1,5 @@
 BasicInfo:
-  Title                   : "Sonic Roboblast 2 3DS"
+  Title                   : "Sonic Robo Blast 2"
   ProductCode             : "CTR-SRB2-3DS"
   ContentType             : Application
   Logo                    : Homebrew
@@ -87,7 +87,7 @@ AccessControlInfo:
   SpecialMemoryArrange          : true
 
   # New3DS Exclusive Process Settings
-  SystemModeExt                 : 124MB # Legacy(Default)/124MB/178MB  Legacy:Use Old3DS SystemMode
+  SystemModeExt                 : 178MB # Legacy(Default)/124MB/178MB  Legacy:Use Old3DS SystemMode
   CpuSpeed                      : 804MHz # 268MHz(Default)/804MHz
   EnableL2Cache                 : true # false(default)/true
   CanAccessCore2                : true 
