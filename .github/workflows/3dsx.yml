@@ -14,9 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install DKP pacman
-      run:    wget https://apt.devkitpro.org/install-devkitpro-pacman
-   chmod +x ./install-devkitpro-pacman
-   sudo ./install-devkitpro-pacman
+      run:    wget https://apt.devkitpro.org/install-devkitpro-pacman && chmod +x ./install-devkitpro-pacman && sudo ./install-devkitpro-pacman
     - name: Install dependencies
       run: pacman -S 3ds-sdl 3ds-sdl_mixer git
     - name: Install citro3d fork
