@@ -508,10 +508,6 @@ static inline void P_LoadSubsectors(lumpnum_t lumpnum)
 }
 
 //
-// P_LoadSectors
-//
-
-//
 // levelflats
 //
 #define MAXLEVELFLATS 256
@@ -536,24 +532,21 @@ size_t P_PrecacheLevelFlats(void)
 	return flatmemory;
 }
 
-// help function for P_LoadSectors, find a flat in the active wad files,
+// Auxiliary function. Find a flat in the active wad files,
 // allocate an id for it, and set the levelflat (to speedup search)
-//
 INT32 P_AddLevelFlat(const char *flatname, levelflat_t *levelflat)
 {
 	size_t i;
 
-	//
-	//  first scan through the already found flats
-	//
+    // Scan through the already found flats, break if it matches.
 	for (i = 0; i < numlevelflats; i++, levelflat++)
-		if (strnicmp(levelflat->name,flatname,8)==0)
+		if (strnicmp(levelflat->name, flatname, 8) == 0)
 			break;
 
-	// that flat was already found in the level, return the id
+	// If there is no match, make room for a new flat.
 	if (i == numlevelflats)
 	{
-		// store the name
+		// Store the name.
 		strlcpy(levelflat->name, flatname, sizeof (levelflat->name));
 		strupr(levelflat->name);
 
@@ -637,6 +630,8 @@ INT32 P_CheckLevelFlat(const char *flatname)
 	return (INT32)i;
 }
 
+// Sets up the ingame sectors structures.
+// Lumpnum is the lumpnum of a SECTORS lump.
 static void P_LoadSectors(lumpnum_t lumpnum)
 {
 	UINT8 *data;
@@ -644,22 +639,27 @@ static void P_LoadSectors(lumpnum_t lumpnum)
 	mapsector_t *ms;
 	sector_t *ss;
 	levelflat_t *foundflats;
-
+	
+	// We count how many sectors we got.
 	numsectors = W_LumpLength(lumpnum) / sizeof (mapsector_t);
 	if (numsectors <= 0)
 		I_Error("Level has no sectors");
+	
+	// Allocate as much memory as we need into the global sectors table.
 	sectors = Z_Calloc(numsectors*sizeof (*sectors), PU_LEVEL, NULL);
-	data = W_CacheLumpNum(lumpnum,PU_STATIC);
 
-	//Fab : FIXME: allocate for whatever number of flats
-	//           512 different flats per level should be plenty
+	// Cache the data from the lump.
+	data = W_CacheLumpNum(lumpnum, PU_STATIC);
 
+	// Allocate a big chunk of memory as big as our MAXLEVELFLATS limit.
+	//Fab : FIXME: allocate for whatever number of flats - 512 different flats per level should be plenty
 	foundflats = calloc(MAXLEVELFLATS, sizeof (*foundflats));
 	if (foundflats == NULL)
 		I_Error("Ran out of memory while loading sectors\n");
 
 	numlevelflats = 0;
 
+	// For each counted sector, copy the sector raw data from our cache pointer ms, to the global table pointer ss.
 	ms = (mapsector_t *)data;
 	ss = sectors;
 	for (i = 0; i < numsectors; i++, ss++, ms++)
@@ -667,9 +667,6 @@ static void P_LoadSectors(lumpnum_t lumpnum)
 		ss->floorheight = SHORT(ms->floorheight)<<FRACBITS;
 		ss->ceilingheight = SHORT(ms->ceilingheight)<<FRACBITS;
 
-		//
-		//  flats
-		//
 		ss->floorpic = P_AddLevelFlat(ms->floorpic, foundflats);
 		ss->ceilingpic = P_AddLevelFlat(ms->ceilingpic, foundflats);
 
@@ -2982,6 +2979,71 @@ boolean P_RunSOC(const char *socfilename)
 	return true;
 }
 
+#ifdef HAVE_BLUA
+// Auxiliary function for PK3 loading - runs Lua scripts from range.
+void P_LoadLuaScrRange(UINT16 wadnum, UINT16 first, UINT16 num)
+{
+	for (; num > 0; num--, first++)
+	{
+		LUA_LoadLump(wadnum, first);
+	}
+}
+#endif
+
+// Auxiliary function for PK3 loading - runs SOCs from range.
+void P_LoadDehackRange(UINT16 wadnum, UINT16 first, UINT16 num)
+{
+	for (; num > 0; num--, first++)
+	{
+		CONS_Printf(M_GetText("Loading SOC from %s\n"), wadfiles[wadnum]->filename);
+		DEH_LoadDehackedLumpPwad(wadnum, first);
+	}
+}
+
+// Auxiliary function for PK3 loading - looks for sound replacements.
+// NOTE: it does not really add any new sound entry or anything.
+void P_LoadSoundsRange(UINT16 wadnum, UINT16 first, UINT16 num)
+{
+	size_t j;
+	lumpinfo_t *lumpinfo = wadfiles[wadnum]->lumpinfo + first;
+	for (; num > 0; num--, lumpinfo++)
+	{
+		// Let's check whether it's replacing an existing sound or it's a brand new one.
+		for (j = 1; j < NUMSFX; j++)
+		{
+			if (S_sfx[j].name && !strnicmp(S_sfx[j].name, lumpinfo->name + 2, 6))
+			{
+				// the sound will be reloaded when needed,
+				// since sfx->data will be NULL
+				CONS_Debug(DBG_SETUP, "Sound %.8s replaced\n", lumpinfo->name);
+
+				I_FreeSfx(&S_sfx[j]);
+			}
+		}
+	}
+}
+
+// Auxiliary function for PK3 loading - looks for sound replacements.
+// NOTE: does nothing but print debug messages.
+void P_LoadMusicsRange(UINT16 wadnum, UINT16 first, UINT16 num)
+{
+	lumpinfo_t *lumpinfo = wadfiles[wadnum]->lumpinfo + first;
+	char *name;
+	for (; num > 0; num--, lumpinfo++)
+	{
+		name = lumpinfo->name;
+		if (name[0] == 'O' && name[1] == '_')
+		{
+			CONS_Debug(DBG_SETUP, "Music %.8s replaced\n", name);
+		}
+		else if (name[0] == 'D' && name[1] == '_')
+		{
+			CONS_Debug(DBG_SETUP, "Music %.8s replaced\n", name);
+		}
+	}
+	return;
+}
+
 //
 // Add a wadfile to the active wad files,
 // replace sounds, musics, patches, textures, sprites and maps
@@ -2996,6 +3058,23 @@ boolean P_AddWadFile(const char *wadfilename, char **firstmapname)
 	boolean texturechange = false;
 	boolean replacedcurrentmap = false;
 
+	// Vars to help us with the position start and amount of each resource type.
+	// Useful for PK3s since they use folders.
+	// WADs use markers for some resources, but others such as sounds are checked lump-by-lump anyway.
+	UINT16 luaPos, luaNum = 0;
+	UINT16 socPos, socNum = 0;
+	UINT16 sfxPos, sfxNum = 0;
+	UINT16 musPos, musNum = 0;
+	UINT16 sprPos, sprNum = 0;
+	UINT16 texPos, texNum = 0;
+//	UINT16 patPos, patNum = 0;
+//	UINT16 flaPos, flaNum = 0;
+//	UINT16 mapPos, mapNum = 0;
+
+
+
+
+
 	if ((numlumps = W_LoadWadFile(wadfilename)) == INT16_MAX)
 	{
 		CONS_Printf(M_GetText("Errors occurred while loading %s; not added.\n"), wadfilename);
@@ -3003,39 +3082,85 @@ boolean P_AddWadFile(const char *wadfilename, char **firstmapname)
 	}
 	else wadnum = (UINT16)(numwadfiles-1);
 
-	//
-	// search for sound replacements
-	//
-	lumpinfo = wadfiles[wadnum]->lumpinfo;
-	for (i = 0; i < numlumps; i++, lumpinfo++)
+	case RET_PK3:
 	{
-		name = lumpinfo->name;
-		if (name[0] == 'D')
+		// Auxiliary function - input a folder name and gives us the resource markers positions.
+		void FindFolder(char *folName, UINT16 *start, UINT16 *end)
 		{
-			if (name[1] == 'S') for (j = 1; j < NUMSFX; j++)
+			if (!stricmp(lumpinfo->name2, folName))
 			{
-				if (S_sfx[j].name && !strnicmp(S_sfx[j].name, name + 2, 6))
+					lumpinfo++;
+					*start = ++i;
+					for (i; i < numlumps; i++, lumpinfo++)
 				{
-					// the sound will be reloaded when needed,
-					// since sfx->data will be NULL
-					CONS_Debug(DBG_SETUP, "Sound %.8s replaced\n", name);
-
-					I_FreeSfx(&S_sfx[j]);
-
-					sreplaces++;
+					    if (strnicmp(lumpinfo->name2, folName, strlen(folName)))
+						{
+							break;
+						}
 				}
+					lumpinfo--;
+					*end = i-- - *start;
+					CONS_Printf("Folder %s, first lump %lu, total: %lu.\n", folName, *start, *end);
+					return;
 			}
+				return;
+			}
+
+			// Look for the lumps that act as resource delimitation markers.
+			lumpinfo = wadfiles[wadnum]->lumpinfo;
+			for (i = 0; i < numlumps; i++, lumpinfo++)
+			{
+				FindFolder("Lua/",		&luaPos, &luaNum);
+				FindFolder("Soc/",		&socPos, &socNum);
+				FindFolder("Sounds/",	&sfxPos, &sfxNum);
+				FindFolder("Music/",	&musPos, &musNum);
+				FindFolder("Sprites/",	&sprPos, &sprNum);
+				FindFolder("Textures/",	&texPos, &texNum);
+//				FindFolder("Patches/",	&patPos, &patNum);
+//				FindFolder("Flats/",	&flaPos, &flaNum);
+//				FindFolder("Maps/",		&mapPos, &mapNum);
+				
 			else if (name[1] == '_')
 			{
 				CONS_Debug(DBG_SETUP, "Music %.8s replaced\n", name);
 				mreplaces++;
 			}
 		}
+		
+			// Update the detected resources.
+			// Note: ALWAYS load Lua scripts first, SOCs right after, and the remaining resources afterwards.
+#ifdef HAVE_BLUA
+			if (luaNum) // Lua scripts.
+				P_LoadLuaScrRange(wadnum, luaPos, luaNum);
+#endif
+			if (socNum) // SOCs.
+				P_LoadDehackRange(wadnum, socPos, socNum);
+			if (sfxNum) // Sounds. TODO: Function currently only updates already existing sounds, the rest is handled somewhere else.
+				P_LoadSoundsRange(wadnum, sfxPos, sfxNum);
+			if (musNum) // Music. TODO: Useless function right now.
+				P_LoadMusicsRange(wadnum, musPos, musNum);
+			if (sprNum) // Sprites.
+				R_LoadSpritsRange(wadnum, sprPos, sprNum);
+			if (texNum) // Textures. TODO: R_LoadTextures() does the folder positioning once again. New function maybe?
+				R_LoadTextures();
+				
 		else if (name[0] == 'O' && name[1] == '_')
 		{
 			CONS_Debug(DBG_SETUP, "Music %.8s replaced\n", name);
 			digmreplaces++;
 		}
+		
+		//
+		// search for sprite replacements
+		//
+		R_AddSpriteDefs(wadnum);
+
+		// Reload it all anyway, just in case they
+		// added some textures but didn't insert a
+		// TEXTURE1/PNAMES/etc. list.
+		R_LoadTextures(); // numtexture changes
+
+
 #if 0
 		//
 		// search for texturechange replacements
@@ -3051,19 +3176,6 @@ boolean P_AddWadFile(const char *wadfilename, char **firstmapname)
 		CONS_Printf(M_GetText("%s midi musics replaced\n"), sizeu1(mreplaces));
 	if (!devparm && digmreplaces)
 		CONS_Printf(M_GetText("%s digital musics replaced\n"), sizeu1(digmreplaces));
-
-	//
-	// search for sprite replacements
-	//
-	R_AddSpriteDefs(wadnum);
-
-	// Reload it all anyway, just in case they
-	// added some textures but didn't insert a
-	// TEXTURE1/PNAMES/etc. list.
-	if (texturechange) // initialized in the sound check
-		R_LoadTextures(); // numtexture changes
-	else
-		R_FlushTextureCache(); // just reload it from file
 
 	// Reload ANIMATED / ANIMDEFS
 	P_InitPicAnims();
