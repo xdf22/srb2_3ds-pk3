@@ -2434,7 +2434,7 @@ INT32 R_SkinAvailable(const char *name)
 
 	for (i = 0; i < numskins; i++)
 	{
-		if (stricmp(skins[i].name,name)==0)
+		if (strcasecmp(skins[i].name,name)==0)
 			return i;
 	}
 	return -1;
@@ -2449,7 +2449,7 @@ void SetPlayerSkin(INT32 playernum, const char *skinname)
 	for (i = 0; i < numskins; i++)
 	{
 		// search in the skin list
-		if (stricmp(skins[i].name, skinname) == 0)
+		if (strcasecmp(skins[i].name, skinname) == 0)
 		{
 			SetPlayerSkinByNum(playernum, i);
 			return;
@@ -2605,7 +2605,7 @@ void R_AddSkins(UINT16 wadnum)
 			if (!value)
 				I_Error("R_AddSkins: syntax error in S_SKIN lump# %d(%s) in WAD %s\n", lump, W_CheckNameForNumPwad(wadnum,lump), wadfiles[wadnum]->filename);
 
-			if (!stricmp(stoken, "name"))
+			if (!strcasecmp(stoken, "name"))
 			{
 				// the skin name must uniquely identify a single skin
 				// I'm lazy so if name is already used I leave the 'skin x'
@@ -2649,7 +2649,7 @@ void R_AddSkins(UINT16 wadnum)
 						if (*value == '_') *value = ' '; // turn _ into spaces.
 				}
 			}
-			else if (!stricmp(stoken, "realname"))
+			else if (!strcasecmp(stoken, "realname"))
 			{ // Display name (eg. "Knuckles")
 				realname = true;
 				STRBUFCPY(skin->realname, value);
@@ -2658,7 +2658,7 @@ void R_AddSkins(UINT16 wadnum)
 				if (!hudname)
 					STRBUFCPY(skin->hudname, skin->realname);
 			}
-			else if (!stricmp(stoken, "hudname"))
+			else if (!strcasecmp(stoken, "hudname"))
 			{ // Life icon name (eg. "K.T.E")
 				hudname = true;
 				STRBUFCPY(skin->hudname, value);
@@ -2668,31 +2668,31 @@ void R_AddSkins(UINT16 wadnum)
 					STRBUFCPY(skin->realname, skin->hudname);
 			}
 
-			else if (!stricmp(stoken, "sprite"))
+			else if (!strcasecmp(stoken, "sprite"))
 			{
 				strupr(value);
 				strncpy(skin->sprite, value, sizeof skin->sprite);
 			}
-			else if (!stricmp(stoken, "charsel"))
+			else if (!strcasecmp(stoken, "charsel"))
 			{
 				strupr(value);
 				strncpy(skin->charsel, value, sizeof skin->charsel);
 			}
-			else if (!stricmp(stoken, "face"))
+			else if (!strcasecmp(stoken, "face"))
 			{
 				strupr(value);
 				strncpy(skin->face, value, sizeof skin->face);
 				if (!superface)
 					strncpy(skin->superface, value, sizeof skin->superface);
 			}
-			else if (!stricmp(stoken, "superface"))
+			else if (!strcasecmp(stoken, "superface"))
 			{
 				superface = true;
 				strupr(value);
 				strncpy(skin->superface, value, sizeof skin->superface);
 			}
 
-#define FULLPROCESS(field) else if (!stricmp(stoken, #field)) skin->field = get_number(value);
+#define FULLPROCESS(field) else if (!strcasecmp(stoken, #field)) skin->field = get_number(value);
 			// character type identification
 			FULLPROCESS(flags)
 			FULLPROCESS(ability)
@@ -2703,7 +2703,7 @@ void R_AddSkins(UINT16 wadnum)
 			FULLPROCESS(revitem)
 #undef FULLPROCESS
 
-#define GETSPEED(field) else if (!stricmp(stoken, #field)) skin->field = atoi(value)<<FRACBITS;
+#define GETSPEED(field) else if (!strcasecmp(stoken, #field)) skin->field = atoi(value)<<FRACBITS;
 			GETSPEED(normalspeed)
 			GETSPEED(runspeed)
 			GETSPEED(mindash)
@@ -2711,21 +2711,21 @@ void R_AddSkins(UINT16 wadnum)
 			GETSPEED(actionspd)
 #undef GETSPEED
 
-#define GETINT(field) else if (!stricmp(stoken, #field)) skin->field = atoi(value);
+#define GETINT(field) else if (!strcasecmp(stoken, #field)) skin->field = atoi(value);
 			GETINT(thrustfactor)
 			GETINT(accelstart)
 			GETINT(acceleration)
 #undef GETINT
 
 			// custom translation table
-			else if (!stricmp(stoken, "startcolor"))
+			else if (!strcasecmp(stoken, "startcolor"))
 				skin->starttranscolor = atoi(value);
 
-			else if (!stricmp(stoken, "prefcolor"))
+			else if (!strcasecmp(stoken, "prefcolor"))
 				skin->prefcolor = R_GetColorByName(value);
-			else if (!stricmp(stoken, "jumpfactor"))
+			else if (!strcasecmp(stoken, "jumpfactor"))
 				skin->jumpfactor = FLOAT_TO_FIXED(atof(value));
-			else if (!stricmp(stoken, "highresscale"))
+			else if (!strcasecmp(stoken, "highresscale"))
 				skin->highresscale = FLOAT_TO_FIXED(atof(value));
 			else
 			{
@@ -2738,7 +2738,7 @@ void R_AddSkins(UINT16 wadnum)
 					if (!S_sfx[i].name)
 						continue;
 					if (S_sfx[i].skinsound != -1
-						&& !stricmp(S_sfx[i].name,
+						&& !strcasecmp(S_sfx[i].name,
 							stoken + 2))
 					{
 						skin->soundsid[S_sfx[i].skinsound] =

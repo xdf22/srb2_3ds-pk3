@@ -404,7 +404,7 @@ void R_LoadTextures(void)
 	// but the alternative is to spend a ton of time checking and re-checking all previous entries just to skip any potentially patched textures.
 	for (w = 0, numtextures = 0; w < numwadfiles; w++)
 	{
-		if (wadfiles[w]->type == RET_PK3)
+		if (wadfiles[w]->restype == RET_PK3)
 		{
 			texstart = W_CheckNumForFullNamePK3("textures/", (UINT16)w, 0) + 1;
 			texend = W_CheckNumForFolderEndPK3("textures/", (UINT16)w, texstart);
@@ -456,7 +456,7 @@ void R_LoadTextures(void)
 	for (i = 0, w = 0; w < numwadfiles; w++)
 	{
 		// Get the lump numbers for the markers in the WAD, if they exist.
-        if (wadfiles[w]->type == RET_PK3)
+        if (wadfiles[w]->restype == RET_PK3)
 		{
 			texstart = W_CheckNumForFullNamePK3("textures/", (UINT16)w, 0) + 1;
 			texend = W_CheckNumForFolderEndPK3("textures/", (UINT16)w, texstart);
@@ -786,7 +786,7 @@ static texture_t *R_ParseTexture(boolean actuallyLoadTexture)
 		}
 		while (strcmp(texturesToken,"}")!=0)
 		{
-			if (stricmp(texturesToken, "PATCH")==0)
+			if (strcasecmp(texturesToken, "PATCH")==0)
 			{
 				Z_Free(texturesToken);
 				if (resultTexture)
@@ -862,7 +862,7 @@ int R_CountTexturesInTEXTURESLump(UINT16 wadNum)
 	texturesToken = M_GetToken(texturesText);
 	while (texturesToken != NULL)
 	{
-		if (stricmp(texturesToken, "WALLTEXTURE")==0)
+		if (strcasecmp(texturesToken, "WALLTEXTURE")==0)
 		{
 			numTexturesInLump++;
 			Z_Free(texturesToken);
@@ -911,7 +911,7 @@ void R_ParseTEXTURESLump(UINT16 wadNum, INT32 *texindex)
 	texturesToken = M_GetToken(texturesText);
 	while (texturesToken != NULL)
 	{
-		if (stricmp(texturesToken, "WALLTEXTURE")==0)
+		if (strcasecmp(texturesToken, "WALLTEXTURE")==0)
 		{
 			Z_Free(texturesToken);
 			// Get the new texture

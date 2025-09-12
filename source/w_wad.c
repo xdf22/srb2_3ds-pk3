@@ -355,7 +355,7 @@ UINT16 W_LoadWadFile(const char *filename)
 #endif
 	
 	// detect dehacked file with the "soc" extension
-	if (!stricmp(&filename[strlen(filename) - 4], ".soc"))
+	if (!strcasecmp(&filename[strlen(filename) - 4], ".soc"))
 	{
 		// This code emulates a wadfile with one lump name "OBJCTCFG"
 		// at position 0 and size of the whole file.
@@ -376,7 +376,7 @@ UINT16 W_LoadWadFile(const char *filename)
 	}
 #ifdef HAVE_BLUA
 	// detect lua script with the "lua" extension
-	else if (!stricmp(&filename[strlen(filename) - 4], ".lua"))
+	else if (!strcasecmp(&filename[strlen(filename) - 4], ".lua"))
 	{
 		// This code emulates a wadfile with one lump name "LUA_INIT"
 		// at position 0 and size of the whole file.
@@ -395,7 +395,7 @@ UINT16 W_LoadWadFile(const char *filename)
 		lumpinfo->name2[8] = '\0';
 	}
 #endif
-		else if (!stricmp(&filename[strlen(filename) - 4], ".pk3"))
+		else if (!strcasecmp(&filename[strlen(filename) - 4], ".pk3"))
 	{
         char curHeader[4];
 		unsigned long size;
@@ -403,7 +403,7 @@ UINT16 W_LoadWadFile(const char *filename)
 		char endPat[] = {0x50, 0x4b, 0x05, 0x06, 0xff};
 		char *s;
 		int c;
-		boolean matched = FALSE;
+		boolean matched = 0;
 		numlumps = 0;
 
 		//wadfile->restype = RET_PK3;
@@ -428,7 +428,7 @@ UINT16 W_LoadWadFile(const char *filename)
 				s++;
 				if (*s == 0x00) // The array pointer has reached the key char which marks the end. It means we have matched the signature.
 				{
-					matched = TRUE;
+					matched = 1;
 					fseek(handle, -4, SEEK_CUR);
 					CONS_Printf("Found PK3 central directory at position %ld.\n", ftell(handle));
 					break;
@@ -437,7 +437,7 @@ UINT16 W_LoadWadFile(const char *filename)
 		}
 
 		// Error if we couldn't find the central directory at all. It likely means this is not a ZIP/PK3 file.
-        if (matched == FALSE)
+        if (matched == 0)
 		{
 			CONS_Alert(CONS_ERROR, "No central directory inside PK3! File may be corrupted or incomplete.\n");
 			return INT16_MAX;
@@ -499,7 +499,7 @@ UINT16 W_LoadWadFile(const char *filename)
 					lumpinfo[numlumps].disksize = eCompSize;
 					lumpinfo[numlumps].size = eSize;
 					CONS_Printf("Address: %ld, Full: %ld, Comp: %ld\n", lumpinfo[numlumps].position, lumpinfo[numlumps].size, lumpinfo[numlumps].disksize);
-					memset(lumpinfo[numlumps].name, '\0', 9)
+					memset(lumpinfo[numlumps].name, '\0', 9);
 					strncpy(lumpinfo[numlumps].name, eName + eNameLen - 8, 8);
 
 					lumpinfo[numlumps].name2 = Z_Malloc((eNameLen+1)*sizeof(char), PU_STATIC, NULL);
@@ -679,7 +679,7 @@ UINT16 W_LoadWadFile(const char *filename)
 	numwadfiles++; // must come BEFORE W_LoadDehackedLumps, so any addfile called by COM_BufInsertText called by Lua doesn't overwrite what we just loaded
 	
 	// TODO: HACK ALERT - Load Lua & SOC stuff right here for WADs. Avoids crash on startup since WADs are loaded using W_InitMultipleFiles.
-	if (wadfile->type == RET_WAD)
+	if (wadfile->restype == RET_WAD)
 		W_LoadDehackedLumps(numwadfiles - 1);
 
 	W_InvalidateLumpnumCache();
@@ -827,7 +827,7 @@ UINT16 W_CheckNumForFolderEndPK3(const char *name, UINT16 wad, UINT16 startlump)
 	lumpinfo_t *lump_p = wadfiles[wad]->lumpinfo + startlump;
 	for (i = startlump; i < wadfiles[wad]->numlumps; i++, lump_p++)
 	{
-		if (strnicmp(name, lump_p->name2, strlen(name)))
+		if (strncmp(name, lump_p->name2, strlen(name)))
 			break;
 	}
 	// Not found at all?
@@ -843,7 +843,7 @@ UINT16 W_CheckNumForFullNamePK3(const char *name, UINT16 wad, UINT16 startlump)
 	lumpinfo_t *lump_p = wadfiles[wad]->lumpinfo + startlump;
 	for (i = startlump; i < wadfiles[wad]->numlumps; i++, lump_p++)
 	{
-		if (!strnicmp(name, lump_p->name2, strlen(name)))
+		if (!strncmp(name, lump_p->name2, strlen(name)))
 		{
 			CONS_Printf("W_CheckNumForNamePK3: Found %s at %d.\n", name, i);
 			return i;
@@ -1363,9 +1363,9 @@ static int W_VerifyFile(const char *filename, lumpchecklist_t *checklist,
 		return -1;
 
 	// detect dehacked file with the "soc" extension
-	if (stricmp(&filename[strlen(filename) - 4], ".soc") != 0
+	if (strcasecmp(&filename[strlen(filename) - 4], ".soc") != 0
 #ifdef HAVE_BLUA
-	&& stricmp(&filename[strlen(filename) - 4], ".lua") != 0
+	&& strcasecmp(&filename[strlen(filename) - 4], ".lua") != 0
 #endif
 	)
 	{

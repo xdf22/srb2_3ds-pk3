@@ -540,7 +540,7 @@ INT32 P_AddLevelFlat(const char *flatname, levelflat_t *levelflat)
 
     // Scan through the already found flats, break if it matches.
 	for (i = 0; i < numlevelflats; i++, levelflat++)
-		if (strnicmp(levelflat->name, flatname, 8) == 0)
+		if (strncmp(levelflat->name, flatname, 8) == 0)
 			break;
 
 	// If there is no match, make room for a new flat.
@@ -580,7 +580,7 @@ INT32 P_AddLevelFlatRuntime(const char *flatname)
 	//  first scan through the already found flats
 	//
 	for (i = 0; i < numlevelflats; i++, levelflat++)
-		if (strnicmp(levelflat->name,flatname,8)==0)
+		if (strncmp(levelflat->name,flatname,8)==0)
 			break;
 
 	// that flat was already found in the level, return the id
@@ -620,7 +620,7 @@ INT32 P_CheckLevelFlat(const char *flatname)
 	//  scan through the already found flats
 	//
 	for (i = 0; i < numlevelflats; i++, levelflat++)
-		if (strnicmp(levelflat->name,flatname,8)==0)
+		if (strncmp(levelflat->name,flatname,8)==0)
 			break;
 
 	if (i == numlevelflats)
@@ -3011,7 +3011,7 @@ void P_LoadSoundsRange(UINT16 wadnum, UINT16 first, UINT16 num)
 		// Let's check whether it's replacing an existing sound or it's a brand new one.
 		for (j = 1; j < NUMSFX; j++)
 		{
-			if (S_sfx[j].name && !strnicmp(S_sfx[j].name, lumpinfo->name + 2, 6))
+			if (S_sfx[j].name && !strncmp(S_sfx[j].name, lumpinfo->name + 2, 6))
 			{
 				// the sound will be reloaded when needed,
 				// since sfx->data will be NULL
@@ -3082,18 +3082,18 @@ boolean P_AddWadFile(const char *wadfilename, char **firstmapname)
 	}
 	else wadnum = (UINT16)(numwadfiles-1);
 
-	case RET_PK3:
+	for (i = 0; i < numlumps; i++, lumpinfo++)
 	{
 		// Auxiliary function - input a folder name and gives us the resource markers positions.
 		void FindFolder(char *folName, UINT16 *start, UINT16 *end)
 		{
-			if (!stricmp(lumpinfo->name2, folName))
+			if (!strcasecmp(lumpinfo->name2, folName))
 			{
 					lumpinfo++;
 					*start = ++i;
 					for (i; i < numlumps; i++, lumpinfo++)
 				{
-					    if (strnicmp(lumpinfo->name2, folName, strlen(folName)))
+					    if (strncmp(lumpinfo->name2, folName, strlen(folName)))
 						{
 							break;
 						}
@@ -3120,11 +3120,11 @@ boolean P_AddWadFile(const char *wadfilename, char **firstmapname)
 //				FindFolder("Flats/",	&flaPos, &flaNum);
 //				FindFolder("Maps/",		&mapPos, &mapNum);
 				
-			else if (name[1] == '_')
-			{
-				CONS_Debug(DBG_SETUP, "Music %.8s replaced\n", name);
-				mreplaces++;
-			}
+//			else if (name[1] == '_')
+//			{
+//				CONS_Debug(DBG_SETUP, "Music %.8s replaced\n", name);
+//				mreplaces++;
+//			}
 		}
 		
 			// Update the detected resources.
@@ -3140,7 +3140,7 @@ boolean P_AddWadFile(const char *wadfilename, char **firstmapname)
 			if (musNum) // Music. TODO: Useless function right now.
 				P_LoadMusicsRange(wadnum, musPos, musNum);
 			if (sprNum) // Sprites.
-				R_LoadSpritsRange(wadnum, sprPos, sprNum);
+//				R_LoadSpritsRange(wadnum, sprPos, sprNum);
 			if (texNum) // Textures. TODO: R_LoadTextures() does the folder positioning once again. New function maybe?
 				R_LoadTextures();
 				
