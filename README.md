@@ -1,4 +1,4 @@
-# !!this fork isnt tested currently as i could not get DKP working on my mac (yes, im a mac user..)!!
+# if you cant get this branch to compile, try the fixes branch for now
 # SRB2 3DS PK3 fork
 A port of Sonic Robo Blast 2 to the Nintendo New3DS/2DS consoles. <br>
 # current progress: <br>
