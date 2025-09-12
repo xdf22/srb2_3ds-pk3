@@ -1,14 +1,16 @@
 # !!this fork isnt tested currently as i could not get DKP working on my mac (yes, im a mac user..)!!
 # SRB2 3DS PK3 fork
-A port of Sonic Robo Blast 2 to the Nintendo New3DS/2DS consoles.
-current progress:
-#pk3
- ##recognition: done
- ##loading lumps: done
- ##load lumps from folders: nope
- ##load map wads from "maps/": nope
- ##use srb2.pk3: jk, not happening... yet...
-## Installing
+A port of Sonic Robo Blast 2 to the Nintendo New3DS/2DS consoles. <br>
+# current progress: <br>
+## pk3
+ ### recognition: done <br>
+ ### loading lumps: done <br>
+ ### load lumps from folders: nope <br>
+ ### load map wads from "maps/": nope <br>
+ ### use srb2.pk3: jk, not happening... yet... <br>
+## addons menu? <br>
+ ### nothing yet, probably wont even try to do this
+# Installing
 * Download srb2_3ds from the latest release on Github and extract it.
 * If you would like to use the .3dsx file, copy it to /3ds/srb2_3ds on your SD card.
 	If you would like to use the .CIA file, you may copy it at any location on your SD card.
@@ -16,12 +18,12 @@ current progress:
 	You may also copy the files to the root directory. (Note: make sure any existing config.cfg file is located in the same directory as the game files.)
 * Make sure you have dumped your DSP firmware and dspfirm.cdc is present. If it isn't: install and run the "dspDump" homebrew first.
 
-## Building
+# Building
 * Building requires 3ds-sdl and 3ds-sdl_mixer to be installed (use devkitPro's pacman).
 * Build and install [this fork](https://github.com/derrekr/citro3d) of the citro3d 3DS graphics library.
 * makerom is required for building cia.
 
-## Known Issues/Limitations
+# Known Issues/Limitations
 * Does *NOT* run on o3DS devices. The Nintendo New3DS' HW allows higher CPU clock frequencies and adds another layer of cache.
 	On o3DS it's extremely laggy and would probably require modifications to the level design in order to run it at a decent FPS.
 * No support for MIDI music
