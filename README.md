@@ -1,4 +1,3 @@
-# if you cant get this branch to compile, try the fixes branch for now
 # SRB2 3DS PK3 fork
 A port of Sonic Robo Blast 2 to the Nintendo New3DS/2DS consoles. <br>
 # current progress: <br>
@@ -19,6 +18,7 @@ A port of Sonic Robo Blast 2 to the Nintendo New3DS/2DS consoles. <br>
 * Make sure you have dumped your DSP firmware and dspfirm.cdc is present. If it isn't: install and run the "dspDump" homebrew first.
 
 # Building
+## requires older versions of dka's 3ds libraries in order to compile correctly
 * Building requires 3ds-sdl and 3ds-sdl_mixer to be installed (use devkitPro's pacman).
 * Build and install [this fork](https://github.com/derrekr/citro3d) of the citro3d 3DS graphics library.
 * makerom is required for building cia.
