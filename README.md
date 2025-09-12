@@ -5,7 +5,7 @@ A port of Sonic Robo Blast 2 to the Nintendo New3DS/2DS consoles. <br>
 ## pk3
  ### recognition: done <br>
  ### loading lumps: done <br>
- ### load lumps from folders: nope <br>
+ ### load lumps from folders: done, some resources arent loaded yet tho <br>
  ### load map wads from "maps/": nope <br>
  ### use srb2.pk3: jk, not happening... yet... <br>
 ## addons menu? <br>
