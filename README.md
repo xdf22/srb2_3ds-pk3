@@ -1,4 +1,7 @@
-# !!this fork isnt tested currently as i could not get DKP working on my mac (yes, im a mac user..)!!
+## changes in this branch include:
+### stricmp to strcasecmp so it compiles on mac/linux
+### strnicmp to strncmp, same reason
+### maybe something else? i forgot honestly
 # SRB2 3DS PK3 fork
 A port of Sonic Robo Blast 2 to the Nintendo New3DS/2DS consoles. <br>
 # current progress: <br>
