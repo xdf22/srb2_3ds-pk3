@@ -1,7 +1,13 @@
 # !!this fork isnt tested currently as i could not get DKP working on my mac (yes, im a mac user..)!!
 # SRB2 3DS PK3 fork
 A port of Sonic Robo Blast 2 to the Nintendo New3DS/2DS consoles.
-
+current progress:
+#pk3
+ ##recognition: done
+ ##loading lumps: done
+ ##load lumps from folders: nope
+ ##load map wads from "maps/": nope
+ ##use srb2.pk3: jk, not happening... yet...
 ## Installing
 * Download srb2_3ds from the latest release on Github and extract it.
 * If you would like to use the .3dsx file, copy it to /3ds/srb2_3ds on your SD card.
