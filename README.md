@@ -7,6 +7,8 @@ A port of Sonic Robo Blast 2 to the Nintendo New3DS/2DS consoles. <br>
  ### load lumps from folders: done, some resources arent loaded yet tho <br>
  ### load map wads from "maps/": nope <br>
  ### use srb2.pk3: jk, not happening... yet... <br>
+ ![pk3 loading in action](https://drive.usercontent.google.com/download?id=1kxmqsVjOS0bZEDbIy13EVjDbGgSsKqxD&export=download&authuser=0) <br>
+ ( ^ broken compiled build without any graphics)
 ## addons menu? <br>
  ### nothing yet, probably wont even try to do this
 # Installing
