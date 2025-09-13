@@ -34,7 +34,7 @@ float sliderState = 0.0f;
 
 UINT32 I_GetFreeMem(UINT32 *total)
 {
-	*total = 128 * 1024 * 1024;
+	*total = 178 * 1024 * 1024;
 	
 	return linearSpaceFree() + vramSpaceFree();
 }
