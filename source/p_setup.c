@@ -3082,7 +3082,7 @@ boolean P_AddWadFile(const char *wadfilename, char **firstmapname)
 	}
 	else wadnum = (UINT16)(numwadfiles-1);
 
-	case RET_PK3:
+	for (i = 0; i < numlumps; i++, lumpinfo++)
 	{
 		// Auxiliary function - input a folder name and gives us the resource markers positions.
 		void FindFolder(char *folName, UINT16 *start, UINT16 *end)
